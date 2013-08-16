@@ -12,7 +12,7 @@ class Stash < ActiveRecord::Base
 	    		unless number > 6 #trims everything after email
 	    			stringed = row.to_s
 	    			stripped = stringed.strip #no more whites
-	    			subbed = stripped.gsub(/<\/?[^>]+>/, '') #gets rid of tags
+	    			subbed = stripped.gsub(/<\/?[^>]+>/, '') #tags out
 	    			squished = subbed.squish #no more returns
 	    			@adviser.push(squished)
 					end
