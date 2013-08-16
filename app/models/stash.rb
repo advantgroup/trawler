@@ -1,21 +1,32 @@
 class Stash < ActiveRecord::Base
-  attr_accessible :name, :practice, :email, :phone, :body 
+  attr_accessible :email, :body
 
   @url = 'http://www.fpa.com.au/default.asp?action=article&ID=22159&Member='
-
+  
   def self.scan(i, l)
   	until i == l do
-	    target = Nokogiri::HTML(open(@url + i.to_s)) do |config|
-	      config.noblanks
-	    end
+	    target = Nokogiri::HTML(open(@url + i.to_s))
 	    if target.at_css('#ProfileDetails')
-	    	targeted = target.css('#ProfileDetails td')
-	    	puts targeted
+	    	tagged = target.css('#ProfileDetails td').to_s #gets contents
+	    	stripped = tagged.strip #no more whites
+	    	trimmed = stripped.sub(/Languages(.|\s)*/, '') #should trim everything after key
+	    	fin = trimmed.gsub(/<\/?[^>]+>/, '')
+	    	Stash.new do |s|
+	    		puts 'Email: ' + get_email(fin).to_s
+	    		s.email = get_email(fin)
+	    		puts fin
+	    		s.body = fin
+	    		s.save!
+	    	end
 	    else
 	    	puts 'No profile found at record no. ' + i.to_s
 	    end
 	    i += 1
 	  end
+  end
+
+  def self.get_email(string)
+  	string.scan(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b/i)
   end
 
 end
