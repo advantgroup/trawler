@@ -12,10 +12,10 @@ class Stash < ActiveRecord::Base
 	    	trimmed = stripped.sub(/Languages(.|\s)*/, '') #should trim everything after key
 	    	fin = trimmed.gsub(/<\/?[^>]+>/, '')
 	    	Stash.new do |s|
-	    		puts 'Email: ' + get_email(fin).to_s
+	    		puts 'Email: ' + get_email(fin)
 	    		s.email = get_email(fin)
 	    		puts fin
-	    		s.body = fin
+	    		s.body = fin.squish
 	    		s.save!
 	    	end
 	    else
@@ -26,7 +26,7 @@ class Stash < ActiveRecord::Base
   end
 
   def self.get_email(string)
-  	string.scan(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b/i)
+  	string.scan(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b/i).to_s
   end
 
 end
