@@ -1,5 +1,5 @@
 class Stash < ActiveRecord::Base
-  attr_accessible :email, :body
+  attr_accessible :name, :practice, :address, :phone, :fax, :email, :body
 
   @url = 'http://www.fpa.com.au/default.asp?action=article&ID=22159&Member='
   
@@ -7,15 +7,25 @@ class Stash < ActiveRecord::Base
   	until i == l do
 	    target = Nokogiri::HTML(open(@url + i.to_s))
 	    if target.at_css('#ProfileDetails')
-	    	tagged = target.css('#ProfileDetails td').to_s #gets contents
-	    	stripped = tagged.strip #no more whites
-	    	trimmed = stripped.sub(/Languages(.|\s)*/, '') #should trim everything after key
-	    	fin = trimmed.gsub(/<\/?[^>]+>/, '')
+	    	@adviser = []
+	    	target.css('#ProfileDetails tr').each_with_index do |row, number|
+	    		unless number > 6 #trims everything after email
+	    			stringed = row.to_s
+	    			stripped = stringed.strip #no more whites
+	    			subbed = stripped.gsub(/<\/?[^>]+>/, '') #gets rid of tags
+	    			squished = subbed.squish #no more returns
+	    			@adviser.push(squished)
+					end
+	    	end
+	    	puts 'Outside: ' + @adviser.to_s
 	    	Stash.new do |s|
-	    		puts 'Email: ' + get_email(fin)
-	    		s.email = get_email(fin)
-	    		puts fin
-	    		s.body = fin.squish
+	    		s.name = @adviser[0].to_s
+	    		s.practice = @adviser[1].to_s
+	    		s.address = @adviser[2].to_s
+	    		s.phone = @adviser[3].to_s + ' ' + @adviser[5].to_s
+	    		s.fax = @adviser[4].to_s
+	    		s.email = @adviser[6].to_s
+	    		s.body = @adviser.to_s
 	    		s.save!
 	    	end
 	    else
@@ -23,10 +33,6 @@ class Stash < ActiveRecord::Base
 	    end
 	    i += 1
 	  end
-  end
-
-  def self.get_email(string)
-  	string.scan(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b/i).to_s
   end
 
 end
