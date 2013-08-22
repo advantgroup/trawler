@@ -5,7 +5,7 @@ class Stash < ActiveRecord::Base
   
   def self.scan(i, l)
   	until i == l do
-	    target = Nokogiri::HTML(open(@url + i.to_s))
+	    target = Nokogiri::HTML(open(@url + i.to_s, 'User-Agent' => 'Mozilla/5.0'))
 	    if target.at_css('#ProfileDetails')
 	    	@adviser = []
 	    	target.css('#ProfileDetails tr').each_with_index do |row, number|
@@ -32,6 +32,7 @@ class Stash < ActiveRecord::Base
 	    	puts 'No profile found at record no. ' + i.to_s
 	    end
 	    i += 1
+	    sleep 2 #under the radar
 	  end
   end
 

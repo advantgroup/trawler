@@ -1,0 +1,4 @@
+Name,Email
+<% @stashes.each do |stash| %>
+  <%= raw "\"#{stash.name}\"" %>,<%= raw "\"#{stash.email}\"" %>
+<% end %>

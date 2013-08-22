@@ -1,0 +1,24 @@
+<table>
+<tr>
+  <th>Name</th>
+  <th>Practice</th>
+  <th>Email</th>
+  <th>Phone</th>
+  <th>Fax</th>
+  <th>Address</th>
+</tr>
+
+<% if @stashes.present? %>
+	<% @stashes.each do |stash| %>
+	  <tr>
+	  	<td><%= stash.name %></td>
+	  	<td><%= stash.practice %></td>
+	  	<td><%= stash.email %></td>
+	  	<td><%= stash.phone %></td>
+	  	<td><%= stash.fax %></td>
+	  	<td><%= stash.address %></td>
+	  </tr>
+	<% end %>
+<% end %>
+
+</table>
