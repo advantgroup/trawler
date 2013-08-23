@@ -32,7 +32,7 @@ class Stash < ActiveRecord::Base
 	    	puts 'No profile found at record no. ' + i.to_s
 	    end
 	    i += 1
-	    sleep 2 #under the radar
+	    sleep(rand(2.001..5.999)) #under the radar
 	  end
   end
 
