@@ -1,4 +1,4 @@
-Name,Email
+Name,Practice,Email,Phone,Fax,Address
 <% @stashes.each do |stash| %>
-  <%= raw "\"#{stash.name}\"" %>,<%= raw "\"#{stash.email}\"" %>
+  <%= raw "\"#{stash.name}\"" %>,<%= raw "\"#{stash.practice}\"" %>,<%= raw "\"#{stash.email}\"" %>,<%= raw "\"#{stash.phone}\"" %>,<%= raw "\"#{stash.fax}\"" %>,<%= raw "\"#{stash.address}\"" %>
 <% end %>

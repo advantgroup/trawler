@@ -4,8 +4,7 @@ class StashesController < ActionController::Base
 		@stashes = Stash.all
 	  respond_to do |format|
 	    format.html
-	    format.json { render json: @stash }
-	    format.csv
+	    format.csv { send_data Stash.to_csv }
 	  end
   end
 
