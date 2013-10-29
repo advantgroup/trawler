@@ -1,21 +1,21 @@
 class Stash < ActiveRecord::Base
   attr_accessible :name, :practice, :address, :phone, :fax, :email, :body
 
-  #column_names = :name, :practice, :address, :phone, :fax, :email
+  # column_names = :name, :practice, :address, :phone, :fax, :email
 
   @url = 'http://www.fpa.com.au/default.asp?action=article&ID=22159&Member='
   
-  def self.scan(i, l)
-  	until i == l do
+  def self.scan(i, limit)
+  	until i == limit do
 	    target = Nokogiri::HTML(open(@url + i.to_s, 'User-Agent' => 'Mozilla/5.0'))
 	    if target.at_css('#ProfileDetails')
 	    	@adviser = []
 	    	target.css('#ProfileDetails tr').each_with_index do |row, number|
-	    		unless number > 6 #trims everything after email
+	    		unless number > 6 # trims everything after email
 	    			stringed = row.to_s
-	    			stripped = stringed.strip #no more whites
-	    			subbed = stripped.gsub(/<\/?[^>]+>/, '') #tags out
-	    			squished = subbed.squish #no more returns
+	    			stripped = stringed.strip # no more whites
+	    			subbed = stripped.gsub(/<\/?[^>]+>/, '') # tags out
+	    			squished = subbed.squish # no more returns
 	    			@adviser.push(squished)
 					end
 	    	end
@@ -33,12 +33,12 @@ class Stash < ActiveRecord::Base
 	    	puts 'No profile found at record no. ' + i.to_s
 	    end
 	    i += 1
-	    sleep(rand(2.001..3.999)) #under the radar
+	    sleep(rand(2.001..3.999)) # under the radar
 	  end
 	rescue Timeout::Error
   	puts 'Timing out...'
   	sleep(rand(8.001..12.999))
-		scan(i, l)
+		scan(i, limit)
   end
 
   def self.to_csv(options = {})
