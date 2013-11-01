@@ -3,9 +3,29 @@ class Stash < ActiveRecord::Base
 
   # column_names = :name, :practice, :address, :phone, :fax, :email
 
-  @url = 'http://www.fpa.com.au/default.asp?action=article&ID=22159&Member='
+  def self.xero_scan(i, limit)
+  	# @url = 'http://www.xero.com/au/advisors/?country=au&service=accountant&p='
+  	@url = 'http://advant.com.au/test.html'
+  	until i == limit do # pages
+	    # target = Nokogiri::HTML(open(@url + i.to_s, 'User-Agent' => 'Mozilla/5.0'))
+	    target = Nokogiri::HTML(open(@url, 'User-Agent' => 'Mozilla/5.0'))
+	    target.css('article.row').children.each do |entry| #entires on each page
+	    	puts entry.css('h2').to_s.strip.gsub(/<\/?[^>]+>/, '').squish
+	    	entry.css('a').each do |anchor|
+	    		puts anchor.text if anchor.text.match(/@/)
+	    	end
+	    	puts entry.css('.address span').to_s.strip.gsub(/<\/?[^>]+>/, '').squish
+	    end
+	    i += 1
+	  end
+  end
+
+  def clean(element)
+	  element.to_s.strip.gsub(/<\/?[^>]+>/, '').squish
+  end
   
-  def self.scan(i, limit)
+  def self.fpa_scan(i, limit)
+  	@url = 'http://www.xero.com/au/advisors/?country=au&service=accountant&p='
   	until i == limit do
 	    target = Nokogiri::HTML(open(@url + i.to_s, 'User-Agent' => 'Mozilla/5.0'))
 	    if target.at_css('#ProfileDetails')
