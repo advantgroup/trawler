@@ -4,24 +4,32 @@ class Stash < ActiveRecord::Base
   # column_names = :name, :practice, :address, :phone, :fax, :email
 
   def self.xero_scan(i, limit)
-  	# @url = 'http://www.xero.com/au/advisors/?country=au&service=accountant&p='
-  	@url = 'http://advant.com.au/test.html'
+  	@url = 'http://www.xero.com/au/advisors/?country=au&service=accountant&p='
   	until i == limit do # pages
-	    # target = Nokogiri::HTML(open(@url + i.to_s, 'User-Agent' => 'Mozilla/5.0'))
-	    target = Nokogiri::HTML(open(@url, 'User-Agent' => 'Mozilla/5.0'))
+	    target = Nokogiri::HTML(open(@url + i.to_s, 'User-Agent' => 'Mozilla/5.0'))
 	    target.css('article.row').children.each do |entry| #entires on each page
-	    	puts entry.css('h2').to_s.strip.gsub(/<\/?[^>]+>/, '').squish
+	    	Stash.new do |s|
+	    		s.name = entry.css('h2').to_s.strip.gsub(/<\/?[^>]+>/, '').squish
+	    		s.practice = entry.css('h2').to_s.strip.gsub(/<\/?[^>]+>/, '').squish
+	    		s.address = entry.css('.address span').to_s.strip.gsub(/<\/?[^>]+>/, '').squish
+	    		entry.css('a').each do |anchor|
+	    			s.email = anchor.text if anchor.text.match(/@/)
+	    		end
+	    		s.save!
+	    	end
+	    	puts "FOUND: #{entry.css('h2').to_s.strip.gsub(/<\/?[^>]+>/, '').squish}"
 	    	entry.css('a').each do |anchor|
 	    		puts anchor.text if anchor.text.match(/@/)
 	    	end
 	    	puts entry.css('.address span').to_s.strip.gsub(/<\/?[^>]+>/, '').squish
 	    end
 	    i += 1
+	    sleep(rand(2.001..3.999)) # under the radar
 	  end
-  end
-
-  def clean(element)
-	  element.to_s.strip.gsub(/<\/?[^>]+>/, '').squish
+	rescue Timeout::Error
+  	puts 'Timing out...'
+  	sleep(rand(8.001..12.999))
+		xero_scan(i, limit)
   end
   
   def self.fpa_scan(i, limit)
@@ -58,7 +66,7 @@ class Stash < ActiveRecord::Base
 	rescue Timeout::Error
   	puts 'Timing out...'
   	sleep(rand(8.001..12.999))
-		scan(i, limit)
+		fpa_scan(i, limit)
   end
 
   def self.to_csv(options = {})
